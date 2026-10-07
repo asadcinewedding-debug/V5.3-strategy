@@ -1,0 +1,72 @@
+name: Build AN AI Relight V5.3 Local
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare local runtime assets
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path build_assets | Out-Null
+
+          Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip' -OutFile 'build_assets/python-3.10-embed-amd64.zip'
+          Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'build_assets/get-pip.py'
+
+          Invoke-WebRequest -Uri 'https://github.com/yakhyo/modnet/releases/download/weights/modnet_photographic.onnx' -OutFile 'build_assets/modnet_photographic.onnx'
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/yakhyo/modnet/main/LICENSE' -OutFile 'build_assets/MODNET-LICENSE.txt'
+
+          Invoke-WebRequest -Uri 'https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx' -OutFile 'build_assets/face_detection_yunet_2023mar.onnx'
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/opencv/opencv/master/LICENSE' -OutFile 'build_assets/OPENCV-LICENSE.txt'
+
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lllyasviel/IC-Light/main/LICENSE' -OutFile 'build_assets/ICLIGHT-LICENSE.txt'
+
+          if ((Get-Item build_assets/python-3.10-embed-amd64.zip).Length -lt 10000000) { throw 'Python embed asset is unexpectedly small.' }
+          if ((Get-Item build_assets/modnet_photographic.onnx).Length -lt 10000000) { throw 'MODNet asset is unexpectedly small.' }
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build local engine bootstrap
+        shell: pwsh
+        run: |
+          dotnet publish engine/EngineBootstrap.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o engine_dist
+          $engine = Join-Path $PWD 'engine_dist/relight_engine.exe'
+          if (-not (Test-Path $engine)) { throw 'Local engine bootstrap was not generated.' }
+          & $engine --self-test
+          if ($LASTEXITCODE -ne 0) { throw 'Local engine bootstrap self-test failed.' }
+          Copy-Item $engine 'build_assets/relight_engine.exe' -Force
+
+      - name: Build V5.3 Windows installer
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
+          dotnet publish installer/Installer.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o dist
+          $exe = Join-Path $PWD 'dist/AN-AI-Relight-V5.3-Setup.exe'
+          if (-not (Test-Path $exe)) { throw 'V5.3 installer EXE was not generated.' }
+          Get-FileHash $exe -Algorithm SHA256 | Format-List | Out-File dist/SHA256.txt
+          Get-Item $exe | Format-List Name,Length,FullName
+
+      - name: Upload V5.3 installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: AN-AI-Relight-V5.3-Local-Windows
+          path: |
+            dist/AN-AI-Relight-V5.3-Setup.exe
+            dist/SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
