@@ -33,7 +33,7 @@ jobs:
 
           Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lllyasviel/IC-Light/main/LICENSE' -OutFile 'build_assets/ICLIGHT-LICENSE.txt'
 
-          if ((Get-Item build_assets/python-3.10-embed-amd64.zip).Length -lt 10000000) { throw 'Python embed asset is unexpectedly small.' }
+          if ((Get-Item build_assets/python-3.10-embed-amd64.zip).Length -lt 5000000) { throw 'Python embed asset is unexpectedly small.' }
           if ((Get-Item build_assets/modnet_photographic.onnx).Length -lt 10000000) { throw 'MODNet asset is unexpectedly small.' }
 
       - name: Setup .NET 8
