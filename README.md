@@ -27,3 +27,5 @@ Target hardware:
 - 32 GB RAM
 - Windows 11
 - DirectML primary path
+
+Build target: Windows x64 local DirectML installer.
