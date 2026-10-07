@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>AN-AI-Relight-V5.3-Setup</AssemblyName>
+    <RootNamespace>ANAIRelightV53Setup</RootNamespace>
+    <Version>5.3.0</Version>
+    <FileVersion>5.3.0.0</FileVersion>
+    <AssemblyVersion>5.3.0.0</AssemblyVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\payload\Info.lua" LogicalName="Info.lua" />
+    <EmbeddedResource Include="..\payload\Core.lua" LogicalName="Core.lua" />
+    <EmbeddedResource Include="..\payload\Engine.lua" LogicalName="Engine.lua" />
+    <EmbeddedResource Include="..\payload\Relight.lua" LogicalName="Relight.lua" />
+    <EmbeddedResource Include="..\payload\Relighting.lua" LogicalName="Relighting.lua" />
+    <EmbeddedResource Include="..\payload\runtime\local_worker.py" LogicalName="local_worker.py" />
+
+    <EmbeddedResource Include="..\build_assets\relight_engine.exe" LogicalName="relight_engine.exe" />
+    <EmbeddedResource Include="..\build_assets\python-3.10-embed-amd64.zip" LogicalName="python-3.10-embed-amd64.zip" />
+    <EmbeddedResource Include="..\build_assets\get-pip.py" LogicalName="get-pip.py" />
+
+    <EmbeddedResource Include="..\build_assets\modnet_photographic.onnx" LogicalName="modnet_photographic.onnx" />
+    <EmbeddedResource Include="..\build_assets\face_detection_yunet_2023mar.onnx" LogicalName="face_detection_yunet_2023mar.onnx" />
+
+    <EmbeddedResource Include="..\build_assets\MODNET-LICENSE.txt" LogicalName="MODNET-LICENSE.txt" />
+    <EmbeddedResource Include="..\build_assets\ICLIGHT-LICENSE.txt" LogicalName="ICLIGHT-LICENSE.txt" />
+    <EmbeddedResource Include="..\build_assets\OPENCV-LICENSE.txt" LogicalName="OPENCV-LICENSE.txt" />
+  </ItemGroup>
+</Project>
