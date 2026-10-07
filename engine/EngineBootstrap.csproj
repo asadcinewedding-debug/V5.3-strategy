@@ -8,6 +8,8 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <AssemblyName>relight_engine</AssemblyName>
     <RootNamespace>ANAIRelightV53Engine</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <Version>5.3.0</Version>
   </PropertyGroup>
 </Project>
